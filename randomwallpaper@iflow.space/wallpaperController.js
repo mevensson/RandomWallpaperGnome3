@@ -2,6 +2,7 @@ const Mainloop = imports.gi.GLib;
 
 // Filesystem
 const Gio = imports.gi.Gio;
+const GLib = imports.gi.GLib;
 
 //self
 const Self = imports.misc.extensionUtils.getCurrentExtension();
@@ -9,6 +10,7 @@ const SourceAdapter = Self.imports.sourceAdapter;
 const Prefs = Self.imports.settings;
 const Timer = Self.imports.timer;
 const HistoryModule = Self.imports.history;
+const HomeDir = GLib.get_home_dir();
 
 const LoggerModule = Self.imports.logger;
 
@@ -16,7 +18,11 @@ var WallpaperController = class {
 
 	constructor() {
 		this.logger = new LoggerModule.Logger('RWG3', 'WallpaperController');
-		this.wallpaperlocation = Self.path + '/wallpapers/';
+		this.wallpaperlocation = HomeDir + '/.wallpapers/';
+		if (!GLib.file_test(this.wallpaperlocation, GLib.FileTest.EXISTS)) {
+                        let dir = Gio.file_new_for_path(this.wallpaperlocation);
+			dir.make_directory(null);
+		}
 		this.imageSourceAdapter = null;
 
 		this._autoFetch = {
